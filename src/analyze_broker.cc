@@ -146,12 +146,14 @@ namespace co {
                                 }
                             }
                             string order_no = line.substr(it, end_index - it);
-                            param.order_no = order_no;
-                            if (auto itor = all_message_.find(order_no); itor != all_message_.end()) {
-                                itor->second.second = id;
+                            if (!order_no.empty()) {
+                                param.order_no = order_no;
+                                if (auto itor = all_message_.find(order_no); itor != all_message_.end()) {
+                                    itor->second.second = id;
+                                }
+                                all_recode_.insert(std::make_pair(id, param));
                             }
                         }
-                        all_recode_.insert(std::make_pair(id, param));
                     } else {
                         it = line.find("send withdraw ok");
                         if (it != line.npos) {
@@ -186,10 +188,12 @@ namespace co {
                                 }
                                 if (!message_id.empty()) {
                                     if (auto iter = all_recode_.find(message_id); iter != all_recode_.end()) {
-                                        iter->second.match_type = atol(match_type.c_str());
-                                        iter->second.api_match_time = atol(timestamp.c_str());
-                                        iter->second.broker_match_time = GetLogTimeStamp(line);
-                                        int a = 0;
+                                        int64_t stamp = iter->second.api_send_time % 1000000000LL;
+                                        if (stamp >= 93000000 && stamp <= 145700000) {
+                                            iter->second.match_type = atol(match_type.c_str());
+                                            iter->second.api_match_time = atol(timestamp.c_str());
+                                            iter->second.broker_match_time = GetLogTimeStamp(line);
+                                        }
                                     }
                                 }
                             }
@@ -321,7 +325,10 @@ namespace co {
             all_diff.clear();
             for (auto& it : all_recode) {
                 if (it.match_type == 1) {
-                    all_diff.push_back(x::SubRawDateTime(it.broker_match_time, it.api_send_time));
+                    int64_t stamp = it.api_send_time % 1000000000LL;
+                     if (stamp >= 93000000 && stamp <= 145700000) {
+                        all_diff.push_back(x::SubRawDateTime(it.broker_match_time, it.api_send_time));
+                     }
                 }
             }
             ParseVector(all_diff);
