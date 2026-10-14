@@ -1,5 +1,8 @@
 #include "analyze_broker.h"
 #include <regex>
+#include <iostream>
+#include <fstream>
+#include <string>
 
 
 namespace co {
@@ -189,7 +192,7 @@ namespace co {
                                 if (!message_id.empty()) {
                                     if (auto iter = all_recode_.find(message_id); iter != all_recode_.end()) {
                                         int64_t stamp = iter->second.api_send_time % 1000000000LL;
-                                        if (stamp >= 93000000 && stamp <= 145700000) {
+                                        if (stamp >= 93000000 && stamp <= 195700000) {
                                             iter->second.match_type = atol(match_type.c_str());
                                             iter->second.api_match_time = atol(timestamp.c_str());
                                             iter->second.broker_match_time = GetLogTimeStamp(line);
@@ -270,6 +273,9 @@ namespace co {
                             << ", 机器收到成交推送的时间: " << record.broker_match_time
                             << ", 从send到收到成交推送的时间间隔: " << (record.broker_match_time > 0 ? x::SubRawDateTime(record.broker_match_time, record.api_send_time) : 0)
                             << std::endl;
+//            if (record.match_type == 1) {
+//                std::cout << "api收到成交回报的时间和match_time的差值: " << x::SubRawDateTime(record.broker_match_time, record.api_match_time) << std::endl;
+//            }
         }
 
         std::vector<int64_t> all_diff;
@@ -326,7 +332,7 @@ namespace co {
             for (auto& it : all_recode) {
                 if (it.match_type == 1) {
                     int64_t stamp = it.api_send_time % 1000000000LL;
-                     if (stamp >= 93000000 && stamp <= 145700000) {
+                     if (stamp >= 93000000 && stamp <= 195700000) {
                         all_diff.push_back(x::SubRawDateTime(it.broker_match_time, it.api_send_time));
                      }
                 }

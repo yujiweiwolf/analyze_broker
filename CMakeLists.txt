@@ -33,5 +33,16 @@ aux_source_directory (./src/ COMPAREONE_ALL)
 add_executable(${FEEDER} ${COMPAREONE_ALL})
 
 target_link_libraries(${FEEDER}
-        feeder coral swordfish x stdc++fs yaml-cpp clickhouse-cpp-lib-static boost_date_time boost_filesystem boost_regex boost_system  boost_chrono boost_log boost_program_options boost_thread boost_iostreams z protobuf protobuf-lite sodium zmq ssl crypto iconv pthread dl)
+        feeder coral x stdc++fs yaml-cpp boost_date_time boost_filesystem boost_regex boost_system  boost_chrono boost_log boost_program_options boost_thread boost_iostreams z protobuf protobuf-lite sodium ssl crypto iconv pthread dl)
+
+
+add_executable(read_broker_log parse_flow_control/read_broker_log.cc)
+target_link_libraries(read_broker_log
+        feeder coral x stdc++fs boost_date_time boost_filesystem boost_regex boost_system  boost_chrono boost_log boost_program_options boost_thread boost_iostreams z protobuf protobuf-lite sodium ssl crypto iconv pthread dl)
+
+add_executable(parse_flow_control parse_flow_control/parse_flow_control.cc)
+target_link_libraries(parse_flow_control
+        feeder coral x stdc++fs boost_date_time boost_filesystem boost_regex boost_system  boost_chrono boost_log boost_program_options boost_thread boost_iostreams z protobuf protobuf-lite sodium ssl crypto iconv pthread dl)
+
+
 
